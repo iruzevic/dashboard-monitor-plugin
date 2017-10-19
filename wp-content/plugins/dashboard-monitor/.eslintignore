@@ -1,0 +1,4 @@
+wp-content/themes/hpb/skin/assets/scripts/vendors/*.js
+wp-content/plugins/hpb-general/skin/assets/scripts/vendors/*.js
+wp-content/plugins/hpb-services/skin/assets/scripts/vendors/*.js
+wp-content/plugins/hpb-invest-services/skin/assets/scripts/vendors/*.js
