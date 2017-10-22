@@ -13,15 +13,21 @@ if ( ! function_exists( 'get_plugins' ) ) {
  * Register Endpoints Class
  */
 class Dashborad_Monitor_Api_Endpoint {
+
+  private $plugin_name;
+  private $version;
+  private $helpers;
   /**
    * Constructor function
    */
-  public function __construct() {
-    add_action( 'rest_api_init', array( $this, 'endpoint_init' ) );
+  public function __construct($plugin_name, $version, $helpers) {
+    $this->plugin_name = $plugin_name;
+    $this->version = $version;
+    $this->helpers = $helpers;
   }
 
   /**
-   * Meta_Endpoints function
+   * Register endpoint route
    */
   public function endpoint_init() {
 
@@ -41,7 +47,7 @@ class Dashborad_Monitor_Api_Endpoint {
    */
   public function getPluginsToUpdateArray() {
     $plugins_to_update_array = array();
-    $get_updats_list = get_site_transient("update_plugins");
+    $get_updats_list = get_site_transient( "update_plugins" );
 
     if( empty( $get_updats_list ) ) {
       return false;
@@ -55,7 +61,7 @@ class Dashborad_Monitor_Api_Endpoint {
   }
 
   /**
-   * Get Plugins Full Array
+   * Get Full Array Of Plugins with Update Field
    *
    * @return void
    */
@@ -68,10 +74,11 @@ class Dashborad_Monitor_Api_Endpoint {
 
     foreach($plugins as $plugin_key => $plugin_value) {
 
+      $plugin_value['Update'] = $plugin_value['Version'];
+
+      // If there is update
       if( array_key_exists( $plugin_key, $plugins_to_update_array) ) {
         $plugin_value['Update'] = $plugins_to_update_array[ $plugin_key ];
-      } else {
-        $plugin_value['Update'] = false;
       }
 
       $plugins_array[] = $plugin_value;
@@ -81,11 +88,19 @@ class Dashborad_Monitor_Api_Endpoint {
   }
 
   /**
-   * Callback for endpoint
+   * Display REST / API endpoint data
    *
-   * @return void
+   * @return json
    */
   public function endpoint_callback() {
+    
+    // Check if is valid key
+    if( $this->helpers->isValidAuth() === false ) {
+      return array(
+        'error' => esc_html__( 'Missing API Key', 'dashboard-monitor' )
+      );
+    }
+
     $callback = array();
 
     $callback['project_name'] = get_bloginfo( 'name' );
@@ -96,3 +111,5 @@ class Dashborad_Monitor_Api_Endpoint {
     return $callback;
   }
 }
+
+$this->loader = new Dashboard_Monitor_Loader();

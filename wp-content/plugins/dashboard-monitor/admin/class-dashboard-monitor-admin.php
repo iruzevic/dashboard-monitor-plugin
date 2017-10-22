@@ -96,7 +96,14 @@ class Dashboard_Monitor_Admin {
 		 * class.
 		 */
 
-		// wp_enqueue_script( $this->plugin_name, plugins_url() . '/' . $this->plugin_name . '/skin/public/scripts/application.js', array( 'jquery' ), $this->version, false );
+		wp_register_script( $this->plugin_name, plugins_url() . '/' . $this->plugin_name . '/skin/public/scripts/application.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name );
+		// Ajax.
+		wp_localize_script(
+			$this->plugin_name, 'dashboardMonitorLocalization', array(
+				'dmAjaxUrl' => admin_url( 'admin-ajax.php' ),
+			)
+		);
 	}
 
 }

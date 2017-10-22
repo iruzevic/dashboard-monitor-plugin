@@ -114,7 +114,9 @@ class Dashboard_Monitor {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dashboard-monitor-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dashboard-monitor-helpers.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dashboard-monitor-api-endpoint.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dashboard-monitor-settings-page.php';
 
 		$this->loader = new Dashboard_Monitor_Loader();
 
@@ -147,11 +149,20 @@ class Dashboard_Monitor {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Dashboard_Monitor_Admin( $this->get_plugin_name(), $this->get_version() );
-		$plugin_admin_api_endpoint = new Dashborad_Monitor_Api_Endpoint( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin_helpers = new Dashborad_Monitor_Helpers( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin_api_endpoint = new Dashborad_Monitor_Api_Endpoint( $this->get_plugin_name(), $this->get_version(), $plugin_admin_helpers );
+		$plugin_admin_settings_page = new Dashborad_Monitor_Settings_Page( $this->get_plugin_name(), $this->get_version(), $plugin_admin_helpers );
 
+		$this->loader->add_action( 'rest_api_init', $plugin_admin_api_endpoint, 'endpoint_init' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		$this->loader->add_action( 'admin_menu', $plugin_admin_settings_page, 'registerSettingsPage' );
+		$this->loader->add_action( 'admin_init', $plugin_admin_settings_page, 'registerOptionsFieldDB' );
+		$this->loader->add_action( 'wp_ajax_add_api_key_ajax', $plugin_admin_settings_page, 'add_api_key_ajax' );
+		$this->loader->add_action( 'wp_ajax_nopriv_add_api_key_ajax', $plugin_admin_settings_page, 'add_api_key_ajax' );
+		$this->loader->add_action( 'wp_ajax_remove_api_key_ajax', $plugin_admin_settings_page, 'remove_api_key_ajax' );
+		$this->loader->add_action( 'wp_ajax_nopriv_remove_api_key_ajax', $plugin_admin_settings_page, 'remove_api_key_ajax' );
 	}
 
 	/**
