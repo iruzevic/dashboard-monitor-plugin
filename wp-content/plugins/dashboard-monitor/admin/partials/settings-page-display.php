@@ -44,8 +44,8 @@
     <div class="dashboard-monitor-msg js-msg" data-status=""></div>
 
     <ul class="dashboard-monitor-list js-dashboard-monitor-list">
-      <?php if( ! empty( $apyKeys ) ) { ?>
-        <?php foreach( $apyKeys as $key ) { ?>
+      <?php if ( ! empty( $apy_keys ) ) { ?>
+        <?php foreach ( $apy_keys as $key ) { ?>
           <li class="dashboard-monitor-list__item">
             <?php echo esc_html( $key['name'] ); ?>
             <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key['id'] ); ?>">

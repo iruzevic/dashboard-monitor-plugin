@@ -37,7 +37,7 @@ robots.txt
 wp-content/themes/twenty*/
 
 # Project dev files
-/vendor
+vendor
 node_modules
 
 # Mac OS custom attribute store and thumbnails

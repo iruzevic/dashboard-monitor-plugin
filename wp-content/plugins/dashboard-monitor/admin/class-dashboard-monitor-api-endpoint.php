@@ -6,12 +6,12 @@
  */
 
 if ( ! function_exists( 'get_plugins' ) ) {
-	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+  require_once ABSPATH . 'wp-admin/includes/plugin.php';
 }
 
  /**
- * Register Endpoints Class
- */
+  * Register Endpoints Class
+  */
 class Dashborad_Monitor_Api_Endpoint {
 
   private $plugin_name;
@@ -20,7 +20,7 @@ class Dashborad_Monitor_Api_Endpoint {
   /**
    * Constructor function
    */
-  public function __construct($plugin_name, $version, $helpers) {
+  public function __construct( $plugin_name, $version, $helpers ) {
     $this->plugin_name = $plugin_name;
     $this->version = $version;
     $this->helpers = $helpers;
@@ -47,41 +47,41 @@ class Dashborad_Monitor_Api_Endpoint {
    */
   public function getPluginsToUpdateArray() {
     $plugins_to_update_array = array();
-    $get_updats_list = get_site_transient( "update_plugins" );
+    $get_updats_list = get_site_transient( 'update_plugins' );
 
-    if( empty( $get_updats_list ) ) {
+    if ( empty( $get_updats_list ) ) {
       return false;
     }
 
-    foreach ($get_updats_list->response as $plugin_key => $plugin_value) {
-      $plugins_to_update_array[$plugin_key] = $plugin_value->new_version;
+    foreach ( $get_updats_list->response as $plugin_key => $plugin_value ) {
+      $plugins_to_update_array[ $plugin_key ] = $plugin_value->new_version;
     }
 
     return $plugins_to_update_array;
   }
 
   /**
-   * Undocumented function
+   * Return current and update version of WP core
    *
-   * @return void
+   * @return array
    */
   public function getCoreVersion() {
 
-    $update_array = get_site_transient( "update_core" );
+    $update_array = get_site_transient( 'update_core' );
 
-    if( empty( $update_array ) ) {
+    if ( empty( $update_array ) ) {
       return false;
     }
 
-    if( ! isset( $update_array->updates ) ) {
+    if ( ! isset( $update_array->updates ) ) {
       return false;
     }
 
-    if( ! array_key_exists(0, $update_array->updates) ) {
+    if ( ! array_key_exists( 0, $update_array->updates ) ) {
       return false;
     }
 
-    if( ! isset( $update_array->updates[0]->current ) ) {
+    if ( ! isset( $update_array->updates[0]->current ) ) {
       return false;
     }
 
@@ -89,7 +89,7 @@ class Dashborad_Monitor_Api_Endpoint {
 
     return array(
       'version' => get_bloginfo( 'version' ),
-      'update' => $update_array
+      'update' => $update_array,
     );
   }
 
@@ -105,12 +105,12 @@ class Dashborad_Monitor_Api_Endpoint {
 
     $plugins_to_update_array = $this->getPluginsToUpdateArray();
 
-    foreach($plugins as $plugin_key => $plugin_value) {
+    foreach ( $plugins as $plugin_key => $plugin_value ) {
 
       $plugin_value['Update'] = $plugin_value['Version'];
 
       // If there is update
-      if( array_key_exists( $plugin_key, $plugins_to_update_array) ) {
+      if ( array_key_exists( $plugin_key, $plugins_to_update_array ) ) {
         $plugin_value['Update'] = $plugins_to_update_array[ $plugin_key ];
       }
 
@@ -126,11 +126,11 @@ class Dashborad_Monitor_Api_Endpoint {
    * @return json
    */
   public function endpoint_callback() {
-    
+
     // Check if is valid key
-    if( $this->helpers->isValidAuth() === false ) {
+    if ( $this->helpers->isValidAuth() === false ) {
       return array(
-        'error' => esc_html__( 'Missing API Key', 'dashboard-monitor' )
+        'error' => esc_html__( 'Missing API Key', 'dashboard-monitor' ),
       );
     }
 

@@ -6,8 +6,8 @@
  */
 
   /**
- * Register Endpoints Class
- */
+   * Register Endpoints Class
+   */
 class Dashborad_Monitor_Settings_Page {
 
   private $plugin_name;
@@ -17,7 +17,7 @@ class Dashborad_Monitor_Settings_Page {
   /**
    * Constructor function
    */
-  public function __construct($plugin_name, $version, $helpers) {
+  public function __construct( $plugin_name, $version, $helpers ) {
     $this->plugin_name = $plugin_name;
     $this->version = $version;
     $this->helpers = $helpers;
@@ -72,13 +72,13 @@ class Dashborad_Monitor_Settings_Page {
   public function displayAllKeysName() {
     $get_options_value = $this->helpers->getKeysUnserialized();
 
-    if( empty( $get_options_value ) ) {
+    if ( empty( $get_options_value ) ) {
       return false;
     }
 
     // Remove keys from array
-    foreach($get_options_value as $key => $value) {
-      unset( $get_options_value[$key]['key'] );
+    foreach ( $get_options_value as $key => $value ) {
+      unset( $get_options_value[ $key ]['key'] );
     }
 
     return array_reverse( $get_options_value );
@@ -93,24 +93,23 @@ class Dashborad_Monitor_Settings_Page {
       wp_die( $this->helpers->setMsg( 'error', 'Check your nonce!' ) );
     }
 
-    
     if ( ! isset( $_POST['name'] ) || sanitize_key( empty( $_POST['name'] ) ) ) {
       wp_die( $this->helpers->setMsg( 'error', 'Name not provided!' ) );
     }
 
-    if( $this->helpers->getKeys() === false ) {
+    if ( $this->helpers->getKeys() === false ) {
       $this->helpers->addDbOption();
     }
 
     $key = array(
       'id' => time() + uniqid(),
       'name' => $_POST['name'],
-      'key' => $this->generateApiKey()
+      'key' => $this->generateApiKey(),
     );
-    
+
     $new_value = $this->helpers->addItemToSerializedArray( $key );
 
-    $this->helpers->updateDbOption($new_value);
+    $this->helpers->updateDbOption( $new_value );
 
     wp_die( $this->helpers->setMsg( 'success', 'Success in creating key!', $key ) );
 
@@ -131,13 +130,13 @@ class Dashborad_Monitor_Settings_Page {
 
     $keyId = $_POST['key'];
 
-    $new_value = $this->helpers->removeItemFromSerializedArray( (int)$keyId );
+    $new_value = $this->helpers->removeItemFromSerializedArray( (int) $keyId );
 
-    if( $new_value === false ) {
+    if ( $new_value === false ) {
       wp_die( $this->helpers->setMsg( 'error', 'Key not removed. ID not valid!' ) );
     }
 
-    $this->helpers->updateDbOption($new_value);
+    $this->helpers->updateDbOption( $new_value );
 
     wp_die( $this->helpers->setMsg( 'success', 'Success in removing key!', $key ) );
   }
