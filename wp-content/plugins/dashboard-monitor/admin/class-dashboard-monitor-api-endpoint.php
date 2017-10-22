@@ -61,6 +61,39 @@ class Dashborad_Monitor_Api_Endpoint {
   }
 
   /**
+   * Undocumented function
+   *
+   * @return void
+   */
+  public function getCoreVersion() {
+
+    $update_array = get_site_transient( "update_core" );
+
+    if( empty( $update_array ) ) {
+      return false;
+    }
+
+    if( ! isset( $update_array->updates ) ) {
+      return false;
+    }
+
+    if( ! array_key_exists(0, $update_array->updates) ) {
+      return false;
+    }
+
+    if( ! isset( $update_array->updates[0]->current ) ) {
+      return false;
+    }
+
+    $update_array = $update_array->updates[0]->current;
+
+    return array(
+      'version' => get_bloginfo( 'version' ),
+      'update' => $update_array
+    );
+  }
+
+  /**
    * Get Full Array Of Plugins with Update Field
    *
    * @return void
@@ -105,7 +138,7 @@ class Dashborad_Monitor_Api_Endpoint {
 
     $callback['project_name'] = get_bloginfo( 'name' );
     $callback['project_description'] = get_bloginfo( 'description' );
-    $callback['version'] = get_bloginfo( 'version' );
+    $callback['wp'] = $this->getCoreVersion();
     $callback['plugins'] = $this->getPluginsFullArray();
 
     return $callback;
