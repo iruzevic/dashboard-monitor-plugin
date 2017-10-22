@@ -73,7 +73,8 @@ class Dashboard_Monitor_Admin {
 		 * class.
 		 */
 
-		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/dashboard-monitor-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugins_url() . '/' . $this->plugin_name . '/skin/public/styles/dashboard-monitor-application.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name );
 
 	}
 
@@ -96,7 +97,7 @@ class Dashboard_Monitor_Admin {
 		 * class.
 		 */
 
-		wp_register_script( $this->plugin_name, plugins_url() . '/' . $this->plugin_name . '/skin/public/scripts/application.js', array( 'jquery' ), $this->version, false );
+		wp_register_script( $this->plugin_name, plugins_url() . '/' . $this->plugin_name . '/skin/public/scripts/dashboard-monitor-application.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name );
 		// Ajax.
 		wp_localize_script(

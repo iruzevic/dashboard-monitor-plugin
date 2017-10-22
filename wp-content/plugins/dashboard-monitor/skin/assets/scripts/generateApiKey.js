@@ -13,6 +13,8 @@ export default class GenerateApiKey {
     this.$list = $(options.listSelector);
     this.$removeLink = $(this.removeSelector);
     this.$msg = $(options.msgSelector);
+    this.msgStatusAttr = options.msgStatusAttr;
+    this.listItemNewClass = options.listItemNewClass;
   }
 
   init() {
@@ -30,7 +32,7 @@ export default class GenerateApiKey {
     
     $.post(dashboardMonitorLocalization.dmAjaxUrl, data, (response) => {
 
-      this.$msg.html(response.msg);
+      this.setMsg(response);
 
       if (response.status === 'error') {
         return false;
@@ -39,7 +41,8 @@ export default class GenerateApiKey {
       this.$inputField.val('');
 
       this.$list.find(this.key).remove();
-      this.$list.append(this.getListItem(response.data));
+      this.$list.children().removeClass(this.listItemNewClass);
+      this.$list.prepend(this.getListItem(response.data));
 
       return false;
     }, 'json');
@@ -65,7 +68,7 @@ export default class GenerateApiKey {
     };
 
     $.post(dashboardMonitorLocalization.dmAjaxUrl, data, (response) => {
-      this.$msg.html(response.msg);
+      this.setMsg(response);
 
       if (response.status === 'error') {
         return false;
@@ -81,9 +84,9 @@ export default class GenerateApiKey {
 
   getListItem(values) {
     return `
-      <li class="dashboard-monitor-list__item">
-        ${values.name} : ${values.id} -- 
-        <span class="dashboard-monitor-list__key js-dashboard-monitor-key">${values.key}</span>
+      <li class="dashboard-monitor-list__item ${this.listItemNewClass}">
+        ${values.name}
+        <a href="/wp-json/wp/v2/dashboard-monitor?api_key=${values.key}" target="_blank" class="dashboard-monitor-list__key js-dashboard-monitor-key">Open API Endpoint</a>
         <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="${values.id}"> Remove </a>
       </li>
     `;
@@ -110,6 +113,15 @@ export default class GenerateApiKey {
       }
     });
   }
+
+  setMsg(data) {
+    if (typeof data === 'undefined') {
+      return false;
+    }
+
+    this.$msg.html(`<div class="dashboard-monitor-msg__item">${data.msg}</div>`).attr(this.msgStatusAttr, data.status);
+    return false;
+  }
 }
 
 $(function() {
@@ -122,7 +134,9 @@ $(function() {
     removeSelector: '.js-dashboard-monitor-remove-key',
     keySelector: '.js-dashboard-monitor-key',
     listSelector: '.js-dashboard-monitor-list',
-    msgSelector: '.js-msg'
+    listItemNewClass: 'dashboard-monitor-list__item--new',
+    msgSelector: '.js-msg',
+    msgStatusAttr: 'data-status'
   });
 
   generateApiKey.init();

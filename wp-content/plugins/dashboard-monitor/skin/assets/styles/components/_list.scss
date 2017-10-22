@@ -1,0 +1,28 @@
+$list-item-border-color: $base-silver-color;
+$list-item-new-bg-color: $base-white-color;
+
+.dashboard-monitor-list {
+  @extend %list-reset;
+  margin-top: 30px;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 0;
+    border-bottom: 1px solid $list-item-border-color;
+
+    &:first-child {
+      border-top: 1px solid $list-item-border-color;
+    }
+
+    &--new {
+      background-color: $list-item-new-bg-color;
+    }
+  }
+
+  &__key {
+    font-weight: bold;
+  }
+}

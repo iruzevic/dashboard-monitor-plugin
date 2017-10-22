@@ -74,7 +74,7 @@ module.exports = [
     cache: false,
     context: path.join(__dirname),
     entry: {
-      application: [pluginEntry]
+      'dashboard-monitor-application': [pluginEntry]
     },
     output: {
       path: pluginOutput,

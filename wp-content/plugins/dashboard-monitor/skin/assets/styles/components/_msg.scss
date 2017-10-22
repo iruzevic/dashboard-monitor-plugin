@@ -1,0 +1,19 @@
+$msg-text-color: $base-white-color;
+$msg-bg-error-color: $base-rouge-color;
+$msg-bg-success-color: $base-malachite-color;
+
+.dashboard-monitor-msg {
+  color: $msg-text-color;
+
+  &[data-status='error'] {
+    background-color: $msg-bg-error-color;
+  }
+
+  &[data-status='success'] {
+    background-color: $msg-bg-success-color;
+  }
+
+  &__item {
+    padding: 10px 20px;
+  }
+}

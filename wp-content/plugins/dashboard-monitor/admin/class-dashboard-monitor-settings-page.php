@@ -81,7 +81,7 @@ class Dashborad_Monitor_Settings_Page {
       unset( $get_options_value[$key]['key'] );
     }
 
-    return $get_options_value;
+    return array_reverse( $get_options_value );
   }
 
   /**
