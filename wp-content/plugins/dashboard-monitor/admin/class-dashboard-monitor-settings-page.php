@@ -52,9 +52,9 @@ class Dashborad_Monitor_Settings_Page {
    * Populate page with HTML
    */
   public function getSettingsPage() {
-    $apyKeys = $this->displayAllKeysName();
+    $apy_keys = $this->displayAllKeysName();
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/settings-page-display.php';
-    unset( $apyKeys );
+    unset( $apy_keys );
   }
 
   /**
