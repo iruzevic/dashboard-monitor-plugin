@@ -43,24 +43,6 @@ class Dashborad_Monitor_Api_Endpoint {
   }
 
   /**
-   * Get Plugins To Update List From DB
-   */
-  public function getPluginsToUpdateArray() {
-    $plugins_to_update_array = array();
-    $get_updats_list = get_site_transient( 'update_plugins' );
-
-    if ( empty( $get_updats_list ) ) {
-      return false;
-    }
-
-    foreach ( $get_updats_list->response as $plugin_key => $plugin_value ) {
-      $plugins_to_update_array[ $plugin_key ] = $plugin_value->new_version;
-    }
-
-    return $plugins_to_update_array;
-  }
-
-  /**
    * Return current and update version of WP core
    *
    * @return array
@@ -93,29 +75,58 @@ class Dashborad_Monitor_Api_Endpoint {
     );
   }
 
-  /**
+   /**
+   * Get Full Array Of Themes with Update Field
+   *
+   * @return void
+   */
+  public function getTheme() {
+    $themes_array = array();
+
+    $get_updats_list = get_site_transient( 'update_themes' );
+
+    foreach ( $get_updats_list->checked as $themes_key => $themes_value ) {
+
+      $theme = wp_get_theme();
+
+      $themes_array[ $themes_key ] = array(
+        'name' => $theme->get( 'Name' ),
+        'description' => $theme->get( 'Description' ),
+        'version' => $themes_value,
+        'update' => $themes_value
+      );
+
+      if( isset( $get_updats_list->response[ $themes_key ] ) ) {
+        $themes_array[ $themes_key ][ 'update' ] = $get_updats_list->response[ $themes_key ][ 'new_version' ];
+      }
+    }
+
+    return $themes_array;
+  }
+
+    /**
    * Get Full Array Of Plugins with Update Field
    *
    * @return void
    */
-  public function getPluginsFullArray() {
+  public function getPlugins() {
     $plugins_array = array();
 
-    $plugins = get_plugins();
+    $get_updats_list = get_site_transient( 'update_plugins' );
+    $plugins_list = get_plugins();
 
-    $plugins_to_update_array = $this->getPluginsToUpdateArray();
+    foreach ($plugins_list as $plugins_key => $plugins_value) {
+      $plugins_array[ $plugins_key ] = array(
+        'name' => $plugins_value['Name'],
+        'description' => $plugins_value['Description'],
+        'version' => $plugins_value['Version'],
+        'update' => $plugins_value['Version']
+      );
 
-    foreach ( $plugins as $plugin_key => $plugin_value ) {
-
-      $plugin_value['Update'] = $plugin_value['Version'];
-
-      // If there is update
-      if ( array_key_exists( $plugin_key, $plugins_to_update_array ) ) {
-        $plugin_value['Update'] = $plugins_to_update_array[ $plugin_key ];
+      if( isset( $get_updats_list->response[ $plugins_key ] ) ) {
+        $plugins_array[ $plugins_key ][ 'update' ] = $get_updats_list->response[ $plugins_key ]->new_version;
       }
-
-      $plugins_array[] = $plugin_value;
-    };
+    }
 
     return $plugins_array;
   }
@@ -136,13 +147,15 @@ class Dashborad_Monitor_Api_Endpoint {
 
     $callback = array();
 
+    $callback['q'] = get_num_queries();
     $callback['project_name'] = get_bloginfo( 'name' );
     $callback['project_description'] = get_bloginfo( 'description' );
-    $callback['wp'] = $this->getCoreVersion();
-    $callback['plugins'] = $this->getPluginsFullArray();
+    $callback['url'] = get_bloginfo( 'url' );
+    $callback['admin_email'] = get_bloginfo( 'admin_email' );
+    $callback['core'] = $this->getCoreVersion();
+    $callback['themes'] = $this->getTheme();
+    $callback['plugins'] = $this->getPlugins();
 
     return $callback;
   }
 }
-
-$this->loader = new Dashboard_Monitor_Loader();

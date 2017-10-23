@@ -47,10 +47,20 @@
       <?php if ( ! empty( $apy_keys ) ) { ?>
         <?php foreach ( $apy_keys as $key ) { ?>
           <li class="dashboard-monitor-list__item">
-            <?php echo esc_html( $key['name'] ); ?>
-            <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key['id'] ); ?>">
-              <?php esc_html_e( 'Remove', 'dashboard-monitor' ); ?>
-            </a>
+
+            <?php if( isset( $key[ 'name' ] ) ) { ?>
+              <?php echo esc_html( $key[ 'name' ] ); ?>
+            <?php }?>
+
+            <div class="dashboard-monitor-list__right">
+              <?php if( isset( $key[ 'date' ] ) ) { ?>
+                <span class="dashboard-monitor-list__date"><?php echo esc_html( $key[ 'date' ] ); ?></span>
+              <?php }?>
+
+              <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key[ 'id' ] ); ?>">
+                <?php esc_html_e( 'Remove', 'dashboard-monitor' ); ?>
+              </a>
+            </div>
           </li>
         <?php } ?>
       <?php } ?>

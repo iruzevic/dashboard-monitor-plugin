@@ -74,7 +74,7 @@ export default class GenerateApiKey {
         return false;
       }
 
-      $key.parent().remove();
+      $key.closest('li').remove();
 
       return false;
     }, 'json');

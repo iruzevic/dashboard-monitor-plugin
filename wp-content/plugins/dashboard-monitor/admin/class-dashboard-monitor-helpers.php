@@ -20,6 +20,15 @@ class Dashborad_Monitor_Helpers {
     $this->version = $version;
   }
 
+    /**
+   * Generate security key
+   *
+   * @return string
+   */
+  public function generateApiKey() {
+    return hash( 'sha256', bin2hex( openssl_random_pseudo_bytes( 16 ) . wp_salt( 'SECURE_AUTH_SALT' ) ) );
+  }
+
   /**
    * REST / API endpoint Get pareameter name.
    *

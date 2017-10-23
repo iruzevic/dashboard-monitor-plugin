@@ -1,5 +1,6 @@
 $list-item-border-color: $base-silver-color;
 $list-item-new-bg-color: $base-white-color;
+$list-item-date-color: $base-silver-color;
 
 .dashboard-monitor-list {
   @extend %list-reset;
@@ -20,6 +21,17 @@ $list-item-new-bg-color: $base-white-color;
     &--new {
       background-color: $list-item-new-bg-color;
     }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__date {
+    margin-right: 15px;
+    color: $list-item-date-color;
   }
 
   &__key {

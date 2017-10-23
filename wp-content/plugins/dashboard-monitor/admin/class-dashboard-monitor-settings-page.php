@@ -39,14 +39,7 @@ class Dashborad_Monitor_Settings_Page {
     );
   }
 
-  /**
-   * Generate security key
-   *
-   * @return string
-   */
-  public function generateApiKey() {
-    return hash( 'sha256', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-  }
+
 
   /**
    * Populate page with HTML
@@ -104,7 +97,8 @@ class Dashborad_Monitor_Settings_Page {
     $key = array(
       'id' => time() + uniqid(),
       'name' => $_POST['name'],
-      'key' => $this->generateApiKey(),
+      'date' => date("Y-m-d H:i:s P"),
+      'key' => $this->helpers->generateApiKey(),
     );
 
     $new_value = $this->helpers->addItemToSerializedArray( $key );
