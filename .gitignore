@@ -1,7 +1,6 @@
 # Project Specific
 wp-content/plugins/*
 !wp-content/plugins/dashboard-monitor/
-wp-content/plugins/dashboard-monitor/skin/public
 
 
 # Wordpress files

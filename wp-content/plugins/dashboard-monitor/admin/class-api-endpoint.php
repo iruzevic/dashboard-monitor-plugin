@@ -192,7 +192,6 @@ class Api_Endpoint {
 
     $callback = array();
 
-    $callback['q'] = get_num_queries();
     $callback['project_name'] = get_bloginfo( 'name' );
     $callback['project_description'] = get_bloginfo( 'description' );
     $callback['url'] = get_bloginfo( 'url' );
