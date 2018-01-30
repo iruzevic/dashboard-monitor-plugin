@@ -1,14 +1,18 @@
+/* global process __dirname */
+
 const DEV = process.env.NODE_ENV !== 'production';
 
 const path = require('path');
+const webpack = require('webpack');
+
+const jQuery = require.resolve('jquery');
 
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const appPath = `${path.resolve(__dirname)}`;
 
-// HPB Services
+// Plugin
 const pluginPath = '/skin';
 const pluginFullPath = `${appPath}${pluginPath}`;
 const pluginPublicPath = `${pluginPath}/public/`;
@@ -28,40 +32,74 @@ const allModules = {
     {
       test: /\.(js|jsx)$/,
       use: 'babel-loader',
-      exclude: /node_modules/
+      exclude: /node_modules/,
     },
     {
       test: /\.json$/,
-      use: 'file-loader'
+      exclude: /node_modules/,
+      use: 'file-loader',
     },
     {
       test: /\.(png|svg|jpg|jpeg|gif|ico)$/,
-      use: `file-loader?name=${outputImages}`
+      exclude: [/fonts/, /node_modules/],
+      use: `file-loader?name=${outputImages}`,
     },
     {
-      test: /\.(eot|otf|ttf|woff|woff2)$/,
-      use: `file-loader?name=${outputFonts}`
+      test: /\.(eot|otf|ttf|woff|woff2|svg)$/,
+      exclude: [/images/, /node_modules/],
+      use: `file-loader?name=${outputFonts}`,
     },
     {
       test: /\.scss$/,
+      exclude: /node_modules/,
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader',
-        use: ['css-loader', 'postcss-loader', 'sass-loader']
-      })
-    }
-  ]
+        use: ['css-loader', 'postcss-loader', 'sass-loader'],
+      }),
+    },
+    {
+
+      // Exposes jQuery for use outside Webpack build.
+      test: jQuery,
+      use: [{
+        loader: 'expose-loader',
+        options: 'jQuery',
+      },
+      {
+        loader: 'expose-loader',
+        options: '$',
+      }],
+    },
+  ],
 };
 
 const allPlugins = [
-  new CleanWebpackPlugin([pluginOutput]),
   new ExtractTextPlugin(outputCss),
+
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+  }),
+
+  new webpack.DefinePlugin({
+    'process.env': {
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
+    }
+  }),
 ];
 
 // Use only for production build
 if (!DEV) {
   allPlugins.push(
-    new UglifyJSPlugin({
-      comments: false,
+    new CleanWebpackPlugin([pluginOutput]),
+    new webpack.optimize.UglifyJsPlugin({
+      output: {
+        comments: false
+      },
+      compress: {
+        warnings: false,
+        drop_console: true, // eslint-disable-line camelcase
+      },
       sourceMap: true
     })
   );
@@ -69,9 +107,8 @@ if (!DEV) {
 
 module.exports = [
 
-  // HPB Services plugin
+  // Main Plugin
   {
-    cache: false,
     context: path.join(__dirname),
     entry: {
       'dashboard-monitor-application': [pluginEntry]

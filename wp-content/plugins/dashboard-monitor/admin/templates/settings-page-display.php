@@ -2,7 +2,8 @@
 /**
  * Provide a admin area view for the plugin
  *
- * @package    Dashboard_Monitor
+ * @since 1.0.0
+ * @package dashboard_monitor
  */
 
 ?>
@@ -48,16 +49,16 @@
         <?php foreach ( $apy_keys as $key ) { ?>
           <li class="dashboard-monitor-list__item">
 
-            <?php if( isset( $key[ 'name' ] ) ) { ?>
-              <?php echo esc_html( $key[ 'name' ] ); ?>
-            <?php }?>
+            <?php if ( isset( $key['name'] ) ) { ?>
+              <?php echo esc_html( $key['name'] ); ?>
+            <?php } ?>
 
             <div class="dashboard-monitor-list__right">
-              <?php if( isset( $key[ 'date' ] ) ) { ?>
-                <span class="dashboard-monitor-list__date"><?php echo esc_html( $key[ 'date' ] ); ?></span>
-              <?php }?>
+              <?php if ( isset( $key['date'] ) ) { ?>
+                <span class="dashboard-monitor-list__date"><?php echo esc_html( $key['date'] ); ?></span>
+              <?php } ?>
 
-              <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key[ 'id' ] ); ?>">
+              <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key['id'] ); ?>">
                 <?php esc_html_e( 'Remove', 'dashboard-monitor' ); ?>
               </a>
             </div>

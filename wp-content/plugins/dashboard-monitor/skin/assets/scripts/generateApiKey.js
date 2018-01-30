@@ -1,5 +1,4 @@
 /* global dashboardMonitorLocalization */
-import $ from 'jquery';
 
 export default class GenerateApiKey {
   constructor(options) {
@@ -17,21 +16,15 @@ export default class GenerateApiKey {
     this.listItemNewClass = options.listItemNewClass;
   }
 
-  init() {
-    this.addKeyListener();
-    this.removeKeyListener();
-  }
-
   addKey() {
 
     const data = {
       action: this.addKeyAjaxAction,
       syncNonce: this.$nonceField.val(),
-      name: this.$inputField.val()
+      name: this.$inputField.val(),
     };
     
     $.post(dashboardMonitorLocalization.dmAjaxUrl, data, (response) => {
-
       this.setMsg(response);
 
       if (response.status === 'error') {
@@ -64,7 +57,7 @@ export default class GenerateApiKey {
     const data = {
       action: this.removeKeyAjaxAction,
       syncNonce: this.$nonceField.val(),
-      key: keyId
+      key: keyId,
     };
 
     $.post(dashboardMonitorLocalization.dmAjaxUrl, data, (response) => {
@@ -92,28 +85,6 @@ export default class GenerateApiKey {
     `;
   }
 
-  removeKeyListener() {
-    this.$list.on('click', this.removeSelector, (event) => {
-      event.preventDefault();
-  
-      this.removeKey(event.target);
-    });
-  }
-
-  addKeyListener() {
-    this.$button.on('click', (event) => {
-      event.preventDefault();
-      this.addKey();
-    });
-
-    this.$inputField.on('keypress', (event) => {
-      if (event.which === 13) {
-        event.preventDefault();
-        this.addKey();
-      }
-    });
-  }
-
   setMsg(data) {
     if (typeof data === 'undefined') {
       return false;
@@ -123,22 +94,3 @@ export default class GenerateApiKey {
     return false;
   }
 }
-
-$(function() {
-  const generateApiKey = new GenerateApiKey({
-    addKeyAjaxAction: 'add_api_key_ajax',
-    removeKeyAjaxAction: 'remove_api_key_ajax',
-    nonceField: '#inf_dashboard_monitor_nonce',
-    buttonSelector: '.js-dashboard-monitor-generate-key',
-    inputSelector: '.js-dashboard-monitor-generate-key-name',
-    removeSelector: '.js-dashboard-monitor-remove-key',
-    keySelector: '.js-dashboard-monitor-key',
-    listSelector: '.js-dashboard-monitor-list',
-    listItemNewClass: 'dashboard-monitor-list__item--new',
-    msgSelector: '.js-msg',
-    msgStatusAttr: 'data-status'
-  });
-
-  generateApiKey.init();
-  
-});

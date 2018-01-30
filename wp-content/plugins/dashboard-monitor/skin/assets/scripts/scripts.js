@@ -1,1 +1,1 @@
-import './generateApiKey';
+import './init';
