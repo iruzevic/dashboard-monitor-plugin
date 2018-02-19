@@ -111,7 +111,7 @@ class Main {
     $this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_scripts' );
 
     $this->loader->add_action( 'admin_menu', $settings_page, 'register_settings_page' );
-    $this->loader->add_action( 'admin_init', $settings_page, 'register_options_field_db' );
+    $this->loader->add_action( 'admin_init', $settings_page, 'register_db_options_field' );
 
     $this->loader->add_action( 'wp_ajax_add_api_key_ajax', $settings_page, 'add_api_key_ajax' );
     $this->loader->add_action( 'wp_ajax_nopriv_add_api_key_ajax', $settings_page, 'add_api_key_ajax' );

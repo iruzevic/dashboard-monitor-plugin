@@ -47,20 +47,27 @@
     <ul class="dashboard-monitor-list js-dashboard-monitor-list">
       <?php if ( ! empty( $apy_keys ) ) { ?>
         <?php foreach ( $apy_keys as $key ) { ?>
+          <?php
+            $name = $general_helper->get_array_value( 'name', $key );
+            $date = $general_helper->get_array_value( 'date', $key );
+            $id = $general_helper->get_array_value( 'id', $key );
+          ?>
           <li class="dashboard-monitor-list__item">
 
-            <?php if ( isset( $key['name'] ) ) { ?>
-              <?php echo esc_html( $key['name'] ); ?>
+            <?php if ( ! empty( $name ) ) { ?>
+              <?php echo esc_html( $name ); ?>
             <?php } ?>
 
             <div class="dashboard-monitor-list__right">
-              <?php if ( isset( $key['date'] ) ) { ?>
-                <span class="dashboard-monitor-list__date"><?php echo esc_html( $key['date'] ); ?></span>
+              <?php if ( ! empty( $date ) ) { ?>
+                <span class="dashboard-monitor-list__date"><?php echo esc_html( $date ); ?></span>
               <?php } ?>
 
-              <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $key['id'] ); ?>">
-                <?php esc_html_e( 'Remove', 'dashboard-monitor' ); ?>
-              </a>
+              <?php if ( ! empty( $id ) ) { ?>
+                <a href="#" class="dashboard-monitor-list__remove js-dashboard-monitor-remove-key" data-key-id="<?php echo esc_html( $id ); ?>">
+                  <?php esc_html_e( 'Remove', 'dashboard-monitor' ); ?>
+                </a>
+              <?php } ?>
             </div>
           </li>
         <?php } ?>

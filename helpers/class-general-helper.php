@@ -32,6 +32,24 @@ class General_Helper {
   protected $plugin_version;
 
   /**
+   * REST / API endpoint Get pareameter name.
+   *
+   * @var string
+   *
+   * @since 1.0.0
+   */
+  protected $endpoint_key_name = 'api_key';
+
+  /**
+   * Database Field Name.
+   *
+   * @var string
+   *
+   * @since 1.0.0
+   */
+  public $db_options_name = 'dashboard_monitor_keys';
+
+  /**
    * Initialize class
    *
    * @param array $plugin_info Load global theme info.
@@ -88,29 +106,7 @@ class General_Helper {
    * @since 1.0.0
    */
   public function generate_api_key() {
-    return hash( 'sha256', bin2hex( openssl_random_pseudo_bytes( 16 ) . wp_salt( 'SECURE_AUTH_SALT' ) ) );
-  }
-
-  /**
-   * REST / API endpoint Get pareameter name.
-   *
-   * @return string
-   *
-   * @since 1.0.0
-   */
-  public function get_endpoint_key_name() {
-    return 'api_key';
-  }
-
-  /**
-   * Database Field Name
-   *
-   * @return string
-   *
-   * @since 1.0.0
-   */
-  public function get_db_field_name() {
-    return 'dashboard_monitor_key';
+    return hash( 'sha256', openssl_random_pseudo_bytes( 16 ) . wp_salt( 'SECURE_AUTH_SALT' ) . time() );
   }
 
   /**
@@ -125,63 +121,61 @@ class General_Helper {
       return false;
     }
 
-    update_option( $this->get_db_field_name(), $value );
+    update_option( $this->db_options_name, $value );
   }
 
   /**
-   * Add initial empty state to DB
+   * Remove DB option.
    *
    * @since 1.0.0
    */
-  public function add_db_option() {
-    add_option( $this->get_db_field_name(), '' );
+  public function remove_db_option() {
+    delete_option( $this->db_options_name );
   }
 
   /**
-   * Append data to serialized array
+   * Append data to keys list
    *
    * @param any $item Item to append.
    * @return array
    *
    * @since 1.0.0
    */
-  public function add_item_to_serialized_array( $item = null ) {
+  public function set_key( $item = null ) {
     if ( ! $item ) {
       return false;
     }
 
+    $array = array();
     $get_options_value = $this->get_keys();
 
-    $array = unserialize( $get_options_value );
+    $array = json_decode( $get_options_value, true );
     $array[] = $item;
-    return serialize( $array );
+    return wp_json_encode( $array );
   }
 
   /**
-   * Remove data from serialized array
+   * Remove data from keys list
    *
    * @param int $id Arrey key to remove.
    * @return array
    *
    * @since 1.0.0
    */
-  public function remove_item_from_serialized_array( $id = null ) {
+  public function unset_key( $id = null ) {
     if ( ! $id ) {
       return false;
     }
 
-    $get_options_value = $this->get_keys();
+    $get_keys = $this->get_keys_array();
 
-    $array = unserialize( $get_options_value );
-
-    foreach ( $array as $array_key => $array_value ) {
-      $key = in_array( $id, $array_value, true );
-      if ( $key === true ) {
-        unset( $array[ $array_key ] );
+    foreach ( $get_keys as $key => $value ) {
+      if ( $value['id'] === $id ) {
+        unset( $get_keys[ $key ] );
       }
     }
 
-      return serialize( $array );
+    return wp_json_encode( $get_keys );
   }
 
   /**
@@ -192,7 +186,7 @@ class General_Helper {
    * @since 1.0.0
    */
   public function get_keys() {
-    $option = get_option( $this->get_db_field_name() );
+    $option = get_option( $this->db_options_name );
 
     if ( empty( $option ) ) {
       return false;
@@ -208,14 +202,14 @@ class General_Helper {
    *
    * @since 1.0.0
    */
-  public function get_keys_unserialized() {
+  public function get_keys_array() {
     $keys = $this->get_keys();
 
     if ( empty( $keys ) ) {
       return false;
     }
 
-    return unserialize( $keys );
+    return json_decode( $keys, true );
   }
 
   /**
@@ -232,7 +226,7 @@ class General_Helper {
       return false;
     }
 
-    $all_keys = $this->get_keys_unserialized();
+    $all_keys = $this->get_keys_array();
 
     if ( $all_keys === false ) {
       return false;
@@ -260,11 +254,11 @@ class General_Helper {
    */
   public function is_valid_auth() {
 
-    if ( ! isset( $_GET[ $this->get_endpoint_key_name() ] ) ) {
+    if ( ! isset( $_GET[ $this->endpoint_key_name ] ) ) {
       return false;
     }
 
-    $provided_key = sanitize_key( $_GET[ $this->get_endpoint_key_name() ] );
+    $provided_key = sanitize_key( wp_unslash( $_GET[ $this->endpoint_key_name ] ) );
 
     $key = $this->get_key_by_id( $provided_key );
 
@@ -273,6 +267,15 @@ class General_Helper {
     }
 
     return true;
+  }
+
+  /**
+   * Create unique ID for new key.
+   *
+   * @since 1.0.0
+   */
+  public function set_key_unique_id() {
+    return (int) ( time() + random_int( 0, 100000 ) );
   }
 
   /**

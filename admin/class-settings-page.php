@@ -75,27 +75,6 @@ class Settings_Page {
   }
 
 
-
-  /**
-   * Populate page with HTML
-   *
-   * @since 1.0.0
-   */
-  public function get_settings_page() {
-    $apy_keys = $this->display_all_keys_name();
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/templates/settings-page-display.php';
-    unset( $apy_keys );
-  }
-
-  /**
-   * Register database field
-   *
-   * @since 1.0.0
-   */
-  public function register_options_field_db() {
-    register_setting( 'dashboard-monitor-settings', $this->general_helper->get_db_field_name() );
-  }
-
   /**
    * Return All inputs from DB without Keys
    *
@@ -103,19 +82,40 @@ class Settings_Page {
    *
    * @since 1.0.0
    */
-  public function display_all_keys_name() {
-    $get_options_value = $this->general_helper->get_keys_unserialized();
+  public function get_full_keys_array() {
+    $get_options_value = $this->general_helper->get_keys_array();
 
     if ( empty( $get_options_value ) ) {
       return false;
     }
 
     // Remove keys from array.
-    foreach ( $get_options_value as $key => $value ) {
-      unset( $get_options_value[ $key ]['key'] );
+    foreach ( $get_options_value as $value ) {
+      unset( $value->key );
     }
 
     return array_reverse( $get_options_value );
+  }
+
+  /**
+   * Populate page with HTML
+   *
+   * @since 1.0.0
+   */
+  public function get_settings_page() {
+    $apy_keys = $this->get_full_keys_array();
+    $general_helper = new General_Helpers\General_Helper();
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/templates/settings-page-display.php';
+    unset( $apy_keys, $general_helper );
+  }
+
+  /**
+   * Register database field
+   *
+   * @since 1.0.0
+   */
+  public function register_db_options_field() {
+    register_setting( 'dashboard-monitor-settings', $this->general_helper->db_options_name );
   }
 
   /**
@@ -133,18 +133,14 @@ class Settings_Page {
       wp_send_json( $this->general_helper->set_msg_array( esc_html( 'error' ), esc_html__( 'Name not provided!' ) ) );
     }
 
-    if ( $this->general_helper->get_keys() === false ) {
-      $this->general_helper->add_db_option();
-    }
-
     $key = array(
-        'id' => time() + uniqid(),
+        'id' => $this->general_helper->set_key_unique_id(),
         'name' => sanitize_key( $_POST['name'] ),
         'date' => date( 'Y-m-d H:i:s P' ),
         'key' => $this->general_helper->generate_api_key(),
     );
 
-    $new_value = $this->general_helper->add_item_to_serialized_array( $key );
+    $new_value = $this->general_helper->set_key( $key );
 
     $this->general_helper->update_db_option( $new_value );
 
@@ -169,7 +165,7 @@ class Settings_Page {
 
     $key_id = sanitize_key( $_POST['key'] );
 
-    $new_value = $this->general_helper->remove_item_from_serialized_array( (int) $key_id );
+    $new_value = $this->general_helper->unset_key( (int) $key_id );
 
     if ( $new_value === false ) {
       wp_send_json( $this->general_helper->set_msg_array( esc_html__( 'error' ), esc_html__( 'Key not removed. ID not valid!' ) ) );
